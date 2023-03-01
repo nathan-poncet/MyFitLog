@@ -55,6 +55,7 @@ export const LoginForm: React.FC = () => {
           {...register('password')}
         />
         <LoadingButton
+          type="submit"
           loading={isSubmitting}
           variant="contained"
           color="primary"
