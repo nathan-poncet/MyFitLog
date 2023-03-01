@@ -12,6 +12,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasher;
@@ -63,6 +65,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
+
+    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Goal::class)]
+    private Collection $goals;
+
+    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Data::class)]
+    private Collection $data;
+
+    public function __construct()
+    {
+        $this->goals = new ArrayCollection();
+        $this->data = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -143,5 +157,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Goal>
+     */
+    public function getGoals(): Collection
+    {
+        return $this->goals;
+    }
+
+    public function addGoal(Goal $goal): self
+    {
+        if (!$this->goals->contains($goal)) {
+            $this->goals->add($goal);
+            $goal->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGoal(Goal $goal): self
+    {
+        if ($this->goals->removeElement($goal)) {
+            // set the owning side to null (unless already changed)
+            if ($goal->getUser() === $this) {
+                $goal->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Data>
+     */
+    public function getData(): Collection
+    {
+        return $this->data;
+    }
+
+    public function addData(Data $data): self
+    {
+        if (!$this->data->contains($data)) {
+            $this->data->add($data);
+            $data->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeData(Data $data): self
+    {
+        if ($this->data->removeElement($data)) {
+            // set the owning side to null (unless already changed)
+            if ($data->getUser() === $this) {
+                $data->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

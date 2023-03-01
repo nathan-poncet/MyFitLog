@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\UnitRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UnitRepository::class)]
-#[ApiResource(mercure: true)]
-class Unit
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ApiResource]
+class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,15 +20,11 @@ class Unit
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'units', targetEntity: UnitType::class)]
-    private Collection $unitType;
-
-    #[ORM\OneToMany(mappedBy: 'unit', targetEntity: DataType::class)]
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: DataType::class)]
     private Collection $dataTypes;
 
     public function __construct()
     {
-        $this->unitType = new ArrayCollection();
         $this->dataTypes = new ArrayCollection();
     }
 
@@ -50,36 +46,6 @@ class Unit
     }
 
     /**
-     * @return Collection<int, UnitType>
-     */
-    public function getUnitType(): Collection
-    {
-        return $this->unitType;
-    }
-
-    public function addUnitType(UnitType $unitType): self
-    {
-        if (!$this->unitType->contains($unitType)) {
-            $this->unitType->add($unitType);
-            $unitType->setUnits($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUnitType(UnitType $unitType): self
-    {
-        if ($this->unitType->removeElement($unitType)) {
-            // set the owning side to null (unless already changed)
-            if ($unitType->getUnits() === $this) {
-                $unitType->setUnits(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, DataType>
      */
     public function getDataTypes(): Collection
@@ -91,7 +57,7 @@ class Unit
     {
         if (!$this->dataTypes->contains($dataType)) {
             $this->dataTypes->add($dataType);
-            $dataType->setUnit($this);
+            $dataType->setCategory($this);
         }
 
         return $this;
@@ -101,8 +67,8 @@ class Unit
     {
         if ($this->dataTypes->removeElement($dataType)) {
             // set the owning side to null (unless already changed)
-            if ($dataType->getUnit() === $this) {
-                $dataType->setUnit(null);
+            if ($dataType->getCategory() === $this) {
+                $dataType->setCategory(null);
             }
         }
 
