@@ -28,8 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Post(
             uriTemplate: "/register",
-            processor: UserPasswordHasher::class,
             validationContext: ['groups' => ['Default', 'user:create']],
+            processor: UserPasswordHasher::class,
         ),
         new Get(),
         new Put(processor: UserPasswordHasher::class),
