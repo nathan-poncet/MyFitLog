@@ -17,8 +17,8 @@ import * as Styles from './index.styles';
 function Header() {
   const [drawerIsOpen, toggleDrawer] = useReducer((state) => !state, false);
   return (
-    <>
-      <Styles.Root as="header" maxWidth="xl">
+    <header>
+      <Styles.Root maxWidth="xl">
         <Button onClick={toggleDrawer}>
           <Logo />
         </Button>
@@ -60,7 +60,7 @@ function Header() {
           </ListItem>
         </List>
       </Drawer>
-    </>
+    </header>
   );
 }
 

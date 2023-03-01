@@ -3,9 +3,11 @@ import * as Styles from './index.styles';
 
 function Footer() {
   return (
-    <Styles.Root as="footer" maxWidth="xl">
-      <Brand />
-    </Styles.Root>
+    <footer>
+      <Styles.Root maxWidth="xl">
+        <Brand />
+      </Styles.Root>
+    </footer>
   );
 }
 
