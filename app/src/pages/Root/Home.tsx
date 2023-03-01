@@ -52,7 +52,7 @@ function Home() {
               description: `L'application comprend des graphiques et tableaux pour vous aider à visualiser vos progrès. \n Vous pouvez personnaliser les tableaux en fonction de vos préférences pour mieux suivre vos mesures. \n Avec MyFitLog, vous pouvez suivre votre santé et votre condition physique en un seul endroit.`,
             },
           ].map(({ icon, title, description }) => (
-            <Grid key={title} item xs={12} sm={6} padding={4}>
+            <Grid item xs={12} sm={6} padding={4}>
               <Box>
                 <Box
                   sx={{
