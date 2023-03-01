@@ -5,9 +5,6 @@ import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 
 function Root() {
-  useEffect(() => {
-    fetch("https://localhost/users").then(res => res.json()).then(res => console.log(res));
-  }, [])
   return (
     <Box position="relative" minHeight="100vh">
       <Header />
