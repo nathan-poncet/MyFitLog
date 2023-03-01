@@ -1,11 +1,13 @@
 import React from 'react';
-import { Button, TextField } from '@mui/material';
-import { Link, redirect } from 'react-router-dom';
+import { TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export const LoginForm: React.FC = () => {
+  const navigate = useNavigate();
   const { register, handleSubmit, setError, formState } = useForm<{
     email: string;
     password: string;
@@ -29,7 +31,7 @@ export const LoginForm: React.FC = () => {
         .then((data) => {
           if (data.token) {
             localStorage.setItem('authToken', JSON.stringify(data.token));
-            redirect('/dashboard');
+            navigate('/dashboard');
             resolve('auth success !');
           }
           setError('root', { message: 'No token available' });
@@ -52,17 +54,13 @@ export const LoginForm: React.FC = () => {
           type="password"
           {...register('password')}
         />
-        <Button
-          component={Link}
-          to="/dashboard"
+        <LoadingButton
+          loading={isSubmitting}
           variant="contained"
           color="primary"
         >
           login
-        </Button>
-
-        {/** <FormControlLabel control={<Checkbox defaultChecked/>} label="remember me"/> */}
-        <Button variant="outlined">Sign in with Google</Button>
+        </LoadingButton>
       </Box>
     </form>
   );

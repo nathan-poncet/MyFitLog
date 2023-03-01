@@ -3,10 +3,10 @@ import { Box, TextField } from '@mui/material';
 import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { redirect } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 
 export const SignInForm: React.FC = () => {
+  const navigate = useNavigate();
   const { register, handleSubmit, setError, formState } = useForm<{
     email: string;
     password: string;
@@ -35,9 +35,11 @@ export const SignInForm: React.FC = () => {
             })
             .then((res) => res.data)
             .then((data) => {
+              console.log(data);
+
               if (data.token) {
                 localStorage.setItem('authToken', JSON.stringify(data.token));
-                redirect("/dashboard");
+                navigate('/dashboard');
                 resolve('auth success !');
               }
               setError('root', { message: 'No token available' });
