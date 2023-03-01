@@ -35,7 +35,7 @@ function Login() {
           </Box>
 
           <Typography variant="h4" gutterBottom fontWeight={700}>
-            Rejoins l'avanture MyFitLog !
+            Rejoins l'aventure MyFitLog !
           </Typography>
 
           <Typography variant="body1" gutterBottom color="grey">
