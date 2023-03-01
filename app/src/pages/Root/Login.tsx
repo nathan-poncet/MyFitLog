@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { LoginForm } from '@/features/Login/LoginForm/LoginForm';
 import { SignInForm } from '@/features/Login/SignInForm/SignInForm';
 
@@ -10,7 +10,7 @@ function Login() {
 
   const [isSignInClick, setIsSignInClick] = React.useState(false);
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Container maxWidth="xl" sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: { xs: 0, md: '50%' } }}>
         <Box
           sx={{ display: { xs: 'none', md: 'block' } }}
@@ -65,7 +65,7 @@ function Login() {
           </div>
         </Stack>
       </Box>
-    </Box>
+    </Container>
   );
 }
 

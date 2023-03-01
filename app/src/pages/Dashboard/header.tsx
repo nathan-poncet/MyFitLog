@@ -1,16 +1,26 @@
-import React, { useReducer } from "react"
+import React, { useReducer } from 'react';
 import { LogoDashboard } from '@/components/data_display/logo/dashboard';
-import { LogoutOutlined, MonitorHeart, Settings, AccountCircle, HomeRounded, Info, LockOpen } from '@mui/icons-material'
+import {
+  LogoutOutlined,
+  MonitorHeart,
+  Settings,
+  AccountCircle,
+  HomeRounded,
+  Info,
+  LockOpen,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
-  Divider, Drawer,
+  Divider,
+  Drawer,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon, ListItemText,
-} from '@mui/material'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,8 +29,8 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
 export const Header: React.FC = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const matches = useMediaQuery('(min-width:600px)');
   const [drawerIsOpen, toggleDrawer] = useReducer((state) => !state, false);
@@ -44,10 +54,12 @@ export const Header: React.FC = () => {
           <Box sx={{ m: 1 }} />
           <List>
             <ListItem>
-              <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
+              <ListItemButton
+                sx={{ borderRadius: 2, justifyContent: 'center' }}
+              >
                 <ListItemIcon sx={{ minWidth: 0 }}>
                   <MonitorHeart
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => navigate('/dashboard')}
                     color={
                       location.pathname === '/dashboard' ? 'primary' : 'inherit'
                     }
@@ -56,19 +68,25 @@ export const Header: React.FC = () => {
               </ListItemButton>
             </ListItem>
             <ListItem>
-              <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
+              <ListItemButton
+                sx={{ borderRadius: 2, justifyContent: 'center' }}
+              >
                 <ListItemIcon sx={{ minWidth: 0 }}>
                   <Settings />
                 </ListItemIcon>
               </ListItemButton>
             </ListItem>
             <ListItem>
-              <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
+              <ListItemButton
+                sx={{ borderRadius: 2, justifyContent: 'center' }}
+              >
                 <ListItemIcon sx={{ minWidth: 0 }}>
                   <AccountCircle
-                    onClick={() => navigate("my-profile")}
+                    onClick={() => navigate('my-profile')}
                     color={
-                      location.pathname === '/dashboard/my-profile' ? 'primary' : 'inherit'
+                      location.pathname === '/dashboard/my-profile'
+                        ? 'primary'
+                        : 'inherit'
                     }
                   />
                 </ListItemIcon>
@@ -101,9 +119,14 @@ export const Header: React.FC = () => {
                 aria-label="menu"
                 sx={{ mr: 2 }}
               >
-                <MenuIcon sx={{ color: "white" }} onClick={toggleDrawer}/>
+                <MenuIcon sx={{ color: 'white' }} onClick={toggleDrawer} />
               </IconButton>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} color="white">
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ flexGrow: 1 }}
+                color="white"
+              >
                 News
               </Typography>
             </Toolbar>
@@ -127,7 +150,11 @@ export const Header: React.FC = () => {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to={`/login`}>
+                <ListItemButton
+                  onClick={() => {
+                    localStorage.removeItem('authToken');
+                  }}
+                >
                   <ListItemIcon>
                     <LockOpen />
                   </ListItemIcon>
@@ -139,7 +166,7 @@ export const Header: React.FC = () => {
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
 export default Header;
