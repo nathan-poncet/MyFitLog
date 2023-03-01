@@ -2,7 +2,6 @@ import Footer from './footer';
 import Header from './header';
 import { Box } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
 
 function Root() {
   return (
