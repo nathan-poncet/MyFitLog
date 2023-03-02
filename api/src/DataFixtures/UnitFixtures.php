@@ -18,7 +18,6 @@ class UnitFixtures extends Fixture
         $category->setName("Poids");
         $manager->persist($category);
 
-
         $unitType = new UnitType();
         $unitType->setName("Poids");
         $manager->persist($unitType);
@@ -28,27 +27,14 @@ class UnitFixtures extends Fixture
         $unit->setUnitType($unitType);
         $manager->persist($unit);
 
+        $data_type = new DataType();
+        $data_type->setName("Masse corporelle");
+        $data_type->setUnit($unit);
+        $data_type->setCategory($category);
+        $manager->persist($data_type);
+
         $unit = new Unit();
         $unit->setName("lb");
-        $unit->setUnitType($unitType);
-        $manager->persist($unit);
-
-        $unitType = new UnitType();
-        $unitType->setName("Temps");
-        $manager->persist($unitType);
-
-        $unit = new Unit();
-        $unit->setName("h");
-        $unit->setUnitType($unitType);
-        $manager->persist($unit);
-
-        $unit = new Unit();
-        $unit->setName("min");
-        $unit->setUnitType($unitType);
-        $manager->persist($unit);
-
-        $unit = new Unit();
-        $unit->setName("s");
         $unit->setUnitType($unitType);
         $manager->persist($unit);
 
@@ -66,6 +52,13 @@ class UnitFixtures extends Fixture
         $unit->setUnitType($unitType);
         $manager->persist($unit);
 
+        
+        
+        
+        $category = new Category();
+        $category->setName("Sommeil");
+        $manager->persist($category);
+        
         $unitType = new UnitType();
         $unitType->setName("Autre");
         $manager->persist($unitType);
@@ -74,12 +67,6 @@ class UnitFixtures extends Fixture
         $unit->setName("kg/cm2");
         $unit->setUnitType($unitType);
         $manager->persist($unit);
-
-
-
-        $category = new Category();
-        $category->setName("Sommeil");
-        $manager->persist($category);
 
         $unit = new Unit();
         $unit->setName("%");
@@ -91,6 +78,32 @@ class UnitFixtures extends Fixture
         $data_type->setUnit($unit);
         $data_type->setCategory($category);
         $manager->persist($data_type);
+        
+        
+        $unitType = new UnitType();
+        $unitType->setName("Temps");
+        $manager->persist($unitType);
+
+        $unit = new Unit();
+        $unit->setName("h");
+        $unit->setUnitType($unitType);
+        $manager->persist($unit);
+
+        $data_type = new DataType();
+        $data_type->setName("Temps de sommeil");
+        $data_type->setUnit($unit);
+        $data_type->setCategory($category);
+        $manager->persist($data_type);
+
+        $unit = new Unit();
+        $unit->setName("min");
+        $unit->setUnitType($unitType);
+        $manager->persist($unit);
+
+        $unit = new Unit();
+        $unit->setName("s");
+        $unit->setUnitType($unitType);
+        $manager->persist($unit);
 
         $manager->flush();
     }
