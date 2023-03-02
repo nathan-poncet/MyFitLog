@@ -12,7 +12,7 @@ function Dashboard() {
   }, [isLoggin]);
 
   return isLoggin ? (
-    <Stack direction="row" bgcolor="primary.light">
+    <Stack direction={{xs: 'column', sm: 'row'}} bgcolor="primary.light" minHeight="100vh">
       <Header />
       <Outlet />
     </Stack>

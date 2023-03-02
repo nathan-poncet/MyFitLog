@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
@@ -12,7 +12,7 @@ export const LoginForm: React.FC = () => {
     email: string;
     password: string;
   }>();
-  const { isSubmitting } = formState;
+  const { isSubmitting, errors } = formState;
 
   const onSubmit = ({
     email,
@@ -21,21 +21,29 @@ export const LoginForm: React.FC = () => {
     email: string;
     password: string;
   }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       axios
         .post('/auth', {
           email,
           password,
         })
-        .then((res) => res.data)
-        .then((data) => {
-          if (data.token) {
-            localStorage.setItem('authToken', JSON.stringify(data.token));
-            navigate('/dashboard');
-            resolve('auth success !');
+        .then(({ data }) => {
+          if (!data) {
+            setError('root', { message: 'No token available' });
+            resolve('No token available');
           }
-          setError('root', { message: 'No token available' });
-          reject();
+          if (!data.token) {
+            setError('root', { message: 'No token available' });
+            resolve('No token available');
+          }
+
+          localStorage.setItem('authToken', JSON.stringify(data.token));
+          navigate('/dashboard');
+          resolve('auth success !');
+        })
+        .catch((err) => {
+          setError('root', { message: err.response.data.message });
+          resolve(err);
         });
     });
   };
@@ -62,6 +70,8 @@ export const LoginForm: React.FC = () => {
         >
           login
         </LoadingButton>
+        <br />
+        <Typography color="error.main">{errors.root?.message}</Typography>
       </Box>
     </form>
   );

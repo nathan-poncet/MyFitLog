@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -11,7 +11,7 @@ export const SignInForm: React.FC = () => {
     email: string;
     password: string;
   }>();
-  const { isSubmitting } = formState;
+  const { isSubmitting, errors } = formState;
 
   const onSubmit = ({
     email,
@@ -26,25 +26,38 @@ export const SignInForm: React.FC = () => {
           email,
           plainPassword: password,
         })
-        .then((res) => res.data)
         .then(() => {
           axios
             .post('/auth', {
               email,
-              password: password,
+              password,
             })
-            .then((res) => res.data)
-            .then((data) => {
-              console.log(data);
-
-              if (data.token) {
-                localStorage.setItem('authToken', JSON.stringify(data.token));
-                navigate('/dashboard');
-                resolve('auth success !');
+            .then(({ data }) => {
+              if (!data) {
+                setError('root', { message: 'No token available' });
+                resolve('No token available');
               }
-              setError('root', { message: 'No token available' });
-              reject();
+              if (!data.token) {
+                setError('root', { message: 'No token available' });
+                resolve('No token available');
+              }
+
+              localStorage.setItem('authToken', JSON.stringify(data.token));
+              navigate('/dashboard');
+              resolve('auth success !');
+            })
+            .catch((err) => {
+              setError('root', { message: err.response.data.message });
+              resolve(err);
             });
+        })
+        .catch((err) => {
+          setError('root', {
+            message:
+              err.response.data.message ??
+              err.response.data['hydra:description'],
+          });
+          resolve(err);
         });
     });
   };
@@ -76,6 +89,8 @@ export const SignInForm: React.FC = () => {
         >
           Sign in
         </LoadingButton>
+        <br />
+        <Typography color="error.main">{errors.root?.message}</Typography>
       </Box>
     </form>
   );
