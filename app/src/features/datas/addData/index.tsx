@@ -1,38 +1,40 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
+  TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Dayjs } from 'dayjs';
 import axios from '@/libs/axios';
 import { Controller, useForm } from 'react-hook-form';
+import { Box } from '@mui/system';
+import { LoadingButton } from '@mui/lab';
 
 export const AddData = () => {
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const [categories, setCategories] = useState<{
-    '@context': string;
     '@id': String;
-    '@type': 'hydra:Collection';
     'hydra:member': {
       '@id': string;
       '@type': string;
-      category: String;
       id: number;
-      unit: String;
       name: String;
     }[];
-    'hydra:totalItems': number;
   }>();
   const [dataTypes, setDataTypes] = useState<{
-    '@context': string;
     '@id': String;
-    '@type': 'hydra:Collection';
     'hydra:member': {
       '@id': string;
       '@type': string;
@@ -41,11 +43,28 @@ export const AddData = () => {
       unit: String;
       name: String;
     }[];
-    'hydra:totalItems': number;
   }>();
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<Dayjs | null>(null);
-  const { control, handleSubmit } = useForm<{
+  const [units, setUnits] = useState<{
+    '@id': String;
+    'hydra:member': {
+      '@id': string;
+      '@type': string;
+      id: number;
+      name: string;
+      dataTypes: [string];
+      unit_type: string;
+      unitType: string;
+    }[];
+  }>();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    register,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<{
     category: number;
     date: string;
     value: number;
@@ -53,13 +72,23 @@ export const AddData = () => {
     user: number;
   }>();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const selectedCategory = categories?.['hydra:member'].find(
+    (item) => item.id === watch('category', categories?.['hydra:member'][0]?.id)
+  );
+  const dataTypesFiltered = dataTypes?.['hydra:member'].filter(
+    (item) => item.category === selectedCategory?.['@id']
+  );
+  const selectedDataTypes = dataTypes?.['hydra:member'].find(
+    (item) => item.id === watch('dataType')
+  );
+  const selectedUnit = units?.['hydra:member'].find(
+    (item) => item['@id'] === selectedDataTypes?.unit
+  );
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    if (dataTypesFiltered?.[0]?.id)
+      setValue('dataType', dataTypesFiltered[0].id);
+  }, [selectedCategory]);
 
   useEffect(() => {
     axios
@@ -71,96 +100,173 @@ export const AddData = () => {
     axios
       .get('/data_types')
       .then(({ data }) => {
-        console.log(data);
-        
         setDataTypes(data);
+      })
+      .catch((err) => handleClose());
+    axios
+      .get('/units')
+      .then(({ data }) => {
+        setUnits(data);
       })
       .catch((err) => handleClose());
   }, []);
 
-  const onSubmit = ({}: {
+  const onSubmit = ({
+    date,
+    value,
+    dataType,
+    user,
+  }: {
     date: string;
     value: number;
     dataType: number;
     user: number;
   }) => {
-    return new Promise((resolve, reject) => {
-      console.log(value);
+    return new Promise((resolve) => {
+      axios
+        .post('/data', {
+          date,
+          value: Number(value),
+          dataType: `/data_types/${dataType}`,
+          user: `/users/${35}`,
+        })
+        .then(({ data }) => {
+          resolve('auth success !');
+          handleClose();
+          setOpenSnackbar(true);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
     });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button variant="outlined" onClick={handleClickOpen}>
+    <>
+      <Button variant="outlined" onClick={() => setOpen(true)}>
         Ajouter une donnée
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Ajouter une donnée</DialogTitle>
-        <DialogContent>
-          <br />
-          <FormControl fullWidth>
-            <InputLabel id="category-select-label">Category</InputLabel>
-            <Controller
-              name="category"
-              control={control}
-              defaultValue={categories?.['hydra:member'][0].id}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <Select
-                  labelId="category-select-label"
-                  id="category-select"
-                  label="Category"
-                  ref={ref}
-                  value={
-                    categories?.['hydra:member'].find(
-                      (category) => category.id === value
-                    )?.id
-                  }
-                  onChange={(data) => onChange(data.target.value)}
-                >
-                  {categories?.['hydra:member'].map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>Ajouter une donnée</DialogTitle>
+          <DialogContent>
+            <br />
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Controller
+                name="category"
+                control={control}
+                defaultValue={categories?.['hydra:member'][0].id}
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <Select
+                    labelId="category-select-label"
+                    id="category-select"
+                    label="Category"
+                    ref={ref}
+                    value={value}
+                    onChange={(data) => {
+                      onChange(data.target.value);
+                    }}
+                    required
+                  >
+                    {categories?.['hydra:member'].map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <Box sx={{ m: 4 }} />
+
+            <FormControl fullWidth>
+              <InputLabel id="dataType-select-label">Donnée</InputLabel>
+              <Controller
+                name="dataType"
+                control={control}
+                defaultValue={dataTypesFiltered?.[0]?.id}
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <Select
+                    labelId="dataType-select-label"
+                    id="dataType-select"
+                    label="dataType"
+                    ref={ref}
+                    value={value}
+                    onChange={(data) => onChange(data.target.value)}
+                    required
+                  >
+                    {dataTypesFiltered?.map((dataType) => (
+                      <MenuItem key={dataType.id} value={dataType.id}>
+                        {dataType.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <Box sx={{ m: 4 }} />
+
+            <TextField
+              label="value"
+              placeholder="0"
+              type="number"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {selectedUnit?.name}
+                  </InputAdornment>
+                ),
+              }}
+              {...register('value', {
+                required: true,
+              })}
             />
-          </FormControl>
-          <br />
-          <FormControl fullWidth>
-            <InputLabel id="category-select-label">Category</InputLabel>
-            <Controller
-              name="dataType"
-              control={control}
-              defaultValue={dataTypes?.['hydra:member'][0].id}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <Select
-                  labelId="category-select-label"
-                  id="category-select"
-                  label="Category"
-                  ref={ref}
-                  value={
-                    categories?.['hydra:member'].find(
-                      (category) => category.id === value
-                    )?.id
-                  }
-                  onChange={(data) => onChange(data.target.value)}
-                >
-                  {categories?.['hydra:member'].map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+
+            <Box sx={{ m: 4 }} />
+
+            <TextField
+              label="Date"
+              type="datetime-local"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              sx={{ width: '100%' }}
+              {...register('date', {
+                required: true,
+              })}
             />
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Annulé</Button>
-          <Button onClick={handleClose}>Ajouter</Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                reset();
+                handleClose();
+              }}
+            >
+              Annulé
+            </Button>
+            <LoadingButton type="submit" loading={isSubmitting}>
+              Ajouter
+            </LoadingButton>
+          </DialogActions>
+        </form>
       </Dialog>
-    </form>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Donnée ajouté avec success !
+        </Alert>
+      </Snackbar>
+    </>
   );
 };

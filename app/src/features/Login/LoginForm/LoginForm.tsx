@@ -38,8 +38,8 @@ export const LoginForm: React.FC = () => {
           }
 
           localStorage.setItem('authToken', JSON.stringify(data.token));
-          navigate('/dashboard');
           resolve('auth success !');
+          navigate('/dashboard');
         })
         .catch((err) => {
           setError('root', { message: err.response.data.message });
@@ -54,13 +54,17 @@ export const LoginForm: React.FC = () => {
         <TextField
           label="email"
           placeholder="emm@gmail.com"
-          {...register('email')}
+          {...register('email', {
+            required: true,
+          })}
         />
         <TextField
           label="password"
           placeholder="*********"
           type="password"
-          {...register('password')}
+          {...register('password', {
+            required: true,
+          })}
         />
         <LoadingButton
           type="submit"

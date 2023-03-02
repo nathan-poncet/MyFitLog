@@ -2,13 +2,28 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DataRepository;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[ApiResource()]
+#[ApiResource(
+    uriTemplate: '/users/{id}/data',
+    uriVariables: [
+        'id' => new Link(
+            fromClass: User::class,
+            toProperty: '_user'
+        )
+    ],
+    operations: [
+        new GetCollection(),
+    ],
+)]
+// #[ApiFilter(DateFilter::class, properties: ['date'])]
 class Data
 {
     #[ORM\Id]
@@ -16,19 +31,19 @@ class Data
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $_date = null;
-
     #[ORM\Column]
     private ?float $_value = null;
-
-    #[ORM\ManyToOne(inversedBy: 'data')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?DataType $data_type = null;
+    
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'datas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $_user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'datas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?DataType $dataType = null;
 
     public function getId(): ?int
     {
@@ -37,12 +52,12 @@ class Data
 
     public function getDate(): ?\DateTimeInterface
     {
-        return $this->_date;
+        return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $_date): self
+    public function setDate(\DateTimeInterface $date): self
     {
-        $this->_date = $_date;
+        $this->date = $date;
 
         return $this;
     }
@@ -59,18 +74,6 @@ class Data
         return $this;
     }
 
-    public function getDataType(): ?DataType
-    {
-        return $this->data_type;
-    }
-
-    public function setDataType(?DataType $data_type): self
-    {
-        $this->data_type = $data_type;
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->_user;
@@ -79,6 +82,18 @@ class Data
     public function setUser(?User $_user): self
     {
         $this->_user = $_user;
+
+        return $this;
+    }
+
+    public function getDataType(): ?DataType
+    {
+        return $this->dataType;
+    }
+
+    public function setDataType(?DataType $dataType): self
+    {
+        $this->dataType = $dataType;
 
         return $this;
     }

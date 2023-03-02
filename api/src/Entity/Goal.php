@@ -6,9 +6,22 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\GoalRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: GoalRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
+#[ApiResource(
+    uriTemplate: '/users/{id}/goals', 
+    uriVariables: [
+        'id' => new Link(
+            fromClass: User::class,
+            toProperty: '_user'
+        )
+    ], 
+    operations: [new GetCollection()],
+)]
 class Goal
 {
     #[ORM\Id]

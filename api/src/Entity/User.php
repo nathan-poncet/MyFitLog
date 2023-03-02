@@ -3,8 +3,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,29 +22,31 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[
-    ApiResource(
-        operations: [
-            new GetCollection(),
-            new Post(
-                uriTemplate: "/register",
-                validationContext: ['groups' => ['Default', 'user:create']],
-                processor: UserPasswordHasher::class,
-            ),
-            new Get(),
-            new Put(security: "is_granted('ROLE_ADMIN') or object.owner == user", processor: UserPasswordHasher::class),
-            new Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user", processor: UserPasswordHasher::class),
-            new Delete(security: "is_granted('ROLE_ADMIN') or object.owner == user"),
-            new Get(uriTemplate: '/me', controller: MeController::class,
-                paginationEnabled: false,
-                read: false,
-                name: 'me'
-            ),
-        ],
-        normalizationContext: ['groups' => ['user:read']],
-        denormalizationContext: ['groups' => ['user:create', 'user:update']],
-        mercure: true,
-    )]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/me',
+            controller: MeController::class,
+        ),
+        new Post(
+            uriTemplate: "/register",
+            validationContext: ['groups' => ['Default', 'user:create']],
+            processor: UserPasswordHasher::class,
+        ),
+        new GetCollection(),
+        new Post(
+            validationContext: ['groups' => ['Default', 'user:create']],
+            processor: UserPasswordHasher::class,
+        ),
+        new Get(),
+        new Put(security: "is_granted('ROLE_ADMIN') or object.owner == user", processor: UserPasswordHasher::class),
+        new Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user", processor: UserPasswordHasher::class),
+        new Delete(security: "is_granted('ROLE_ADMIN') or object.owner == user"),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:create', 'user:update']],
+    mercure: true,
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity('email')]
@@ -156,7 +156,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
