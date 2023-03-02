@@ -67,16 +67,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Goal::class)]
-    private Collection $goals;
+    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Data::class, orphanRemoval: true)]
+    private Collection $datas;
 
-    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Data::class)]
-    private Collection $data;
+    #[ORM\OneToMany(mappedBy: '_user', targetEntity: Goal::class, orphanRemoval: true)]
+    private Collection $goals;
 
     public function __construct()
     {
+        $this->datas = new ArrayCollection();
         $this->goals = new ArrayCollection();
-        $this->data = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -161,6 +161,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @return Collection<int, Data>
+     */
+    public function getDatas(): Collection
+    {
+        return $this->datas;
+    }
+
+    public function addData(Data $data): self
+    {
+        if (!$this->datas->contains($data)) {
+            $this->datas->add($data);
+            $data->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeData(Data $data): self
+    {
+        if ($this->datas->removeElement($data)) {
+            // set the owning side to null (unless already changed)
+            if ($data->getUser() === $this) {
+                $data->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, Goal>
      */
     public function getGoals(): Collection
@@ -184,36 +214,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($goal->getUser() === $this) {
                 $goal->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Data>
-     */
-    public function getData(): Collection
-    {
-        return $this->data;
-    }
-
-    public function addData(Data $data): self
-    {
-        if (!$this->data->contains($data)) {
-            $this->data->add($data);
-            $data->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeData(Data $data): self
-    {
-        if ($this->data->removeElement($data)) {
-            // set the owning side to null (unless already changed)
-            if ($data->getUser() === $this) {
-                $data->setUser(null);
             }
         }
 

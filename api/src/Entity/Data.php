@@ -26,7 +26,7 @@ class Data
     #[ORM\JoinColumn(nullable: false)]
     private ?DataType $data_type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'data')]
+    #[ORM\ManyToOne(inversedBy: 'datas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $_user = null;
 
