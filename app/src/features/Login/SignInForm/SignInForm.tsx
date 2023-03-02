@@ -4,9 +4,11 @@ import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export const SignInForm: React.FC = () => {
   const navigate = useNavigate();
+  const { register: authRegister } = useAuth();
   const { register, handleSubmit, setError, formState, watch } = useForm<{
     email: string;
     password: string;
@@ -21,45 +23,14 @@ export const SignInForm: React.FC = () => {
     email: string;
     password: string;
   }) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .post('/register', {
-          email,
-          plainPassword: password,
-        })
-        .then(() => {
-          axios
-            .post('/auth', {
-              email,
-              password,
-            })
-            .then(({ data }) => {
-              if (!data) {
-                setError('root', { message: 'No token available' });
-                resolve('No token available');
-              }
-              if (!data.token) {
-                setError('root', { message: 'No token available' });
-                resolve('No token available');
-              }
-
-              localStorage.setItem('authToken', JSON.stringify(data.token));
-              resolve('auth success !');
-              navigate('/dashboard');
-            })
-            .catch((err) => {
-              setError('root', { message: err.response.data.message });
-              resolve(err);
-            });
+    return new Promise((resolve) => {
+      authRegister(email, password)
+        .then((res) => {
+          navigate('/dashboard');
+          resolve(res);
         })
         .catch((err) => {
-          console.log(err);
-          
-          setError('root', {
-            message:
-              err?.response?.data?.message ??
-              err?.response?.data['hydra:description'],
-          });
+          setError('root', { message: err.response.data['hydra:description'] });
           resolve(err);
         });
     });

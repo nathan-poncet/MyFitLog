@@ -5,9 +5,11 @@ import axios from '@/libs/axios';
 import { useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useAuth } from '@/hooks/useAuth';
 
 export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const { user, login } = useAuth();
   const { register, handleSubmit, setError, formState } = useForm<{
     email: string;
     password: string;
@@ -22,24 +24,10 @@ export const LoginForm: React.FC = () => {
     password: string;
   }) => {
     return new Promise((resolve) => {
-      axios
-        .post('/auth', {
-          email,
-          password,
-        })
-        .then(({ data }) => {
-          if (!data) {
-            setError('root', { message: 'No token available' });
-            resolve('No token available');
-          }
-          if (!data.token) {
-            setError('root', { message: 'No token available' });
-            resolve('No token available');
-          }
-
-          localStorage.setItem('authToken', JSON.stringify(data.token));
-          resolve('auth success !');
+      login(email, password)
+        .then((res) => {
           navigate('/dashboard');
+          resolve(res);
         })
         .catch((err) => {
           setError('root', { message: err.response.data.message });

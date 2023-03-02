@@ -17,18 +17,20 @@ import {
   ListItemIcon,
 } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <Box
       paddingX={2}
       paddingY={4}
       bgcolor="#FFFFFF"
-      width={{xs: '100vw', sm: 'unset'}}
-      height={{xs: 'unset', sm: '100vh'}}
+      width={{ xs: '100vw', sm: 'unset' }}
+      height={{ xs: 'unset', sm: '100vh' }}
       display="inline-flex"
       flexDirection="column"
     >
@@ -88,7 +90,7 @@ export const Header: React.FC = () => {
         <ListItem>
           <ListItemButton
             onClick={() => {
-              localStorage.removeItem('authToken');
+              logout();
               navigate('/');
             }}
             sx={{ borderRadius: 2, justifyContent: 'center' }}

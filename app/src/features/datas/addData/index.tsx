@@ -112,18 +112,9 @@ export const AddData = () => {
 
   useEffect(() => {
     axios
-      .get('/me')
+      .get(`/users/${me.id}/data`)
       .then(({ data }) => {
-        setMe(data);
-      })
-      .then(() => {
-        if (!me) return handleClose();
-        axios
-          .get(`/users/${me.id}/data`)
-          .then(({ data }) => {
-            setData(data);
-          })
-          .catch((err) => handleClose());
+        setData(data);
       })
       .catch((err) => handleClose());
     axios
