@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -9,17 +10,19 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from '@/libs/axios';
 import { Controller, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
+import { LoadingButton } from '@mui/lab';
 
 export const AddData = () => {
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const [categories, setCategories] = useState<{
     '@id': String;
@@ -53,13 +56,22 @@ export const AddData = () => {
       unitType: string;
     }[];
   }>();
-  const { control, handleSubmit, watch, setValue, register } = useForm<{
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    register,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<{
     category: number;
     date: string;
     value: number;
     dataType: number;
     user: number;
   }>();
+
   const selectedCategory = categories?.['hydra:member'].find(
     (item) => item.id === watch('category', categories?.['hydra:member'][0]?.id)
   );
@@ -99,117 +111,162 @@ export const AddData = () => {
       .catch((err) => handleClose());
   }, []);
 
-  const onSubmit = ({}: {
+  const onSubmit = ({
+    date,
+    value,
+    dataType,
+    user,
+  }: {
     date: string;
     value: number;
     dataType: number;
     user: number;
   }) => {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve) => {
+      axios
+        .post('/data', {
+          date,
+          value: Number(value),
+          dataType: `/data_types/${dataType}`,
+          user: `/users/${35}`,
+        })
+        .then(({ data }) => {
+          resolve('auth success !');
+          handleClose();
+          setOpenSnackbar(true);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button variant="outlined" onClick={handleClickOpen}>
+    <>
+      <Button variant="outlined" onClick={() => setOpen(true)}>
         Ajouter une donnée
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Ajouter une donnée</DialogTitle>
-        <DialogContent>
-          <br />
-          <FormControl fullWidth>
-            <InputLabel id="category-select-label">Category</InputLabel>
-            <Controller
-              name="category"
-              control={control}
-              defaultValue={categories?.['hydra:member'][0].id}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <Select
-                  labelId="category-select-label"
-                  id="category-select"
-                  label="Category"
-                  ref={ref}
-                  value={value}
-                  onChange={(data) => {
-                    onChange(data.target.value);
-                  }}
-                  required
-                >
-                  {categories?.['hydra:member'].map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>Ajouter une donnée</DialogTitle>
+          <DialogContent>
+            <br />
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Controller
+                name="category"
+                control={control}
+                defaultValue={categories?.['hydra:member'][0].id}
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <Select
+                    labelId="category-select-label"
+                    id="category-select"
+                    label="Category"
+                    ref={ref}
+                    value={value}
+                    onChange={(data) => {
+                      onChange(data.target.value);
+                    }}
+                    required
+                  >
+                    {categories?.['hydra:member'].map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <Box sx={{ m: 4 }} />
+
+            <FormControl fullWidth>
+              <InputLabel id="dataType-select-label">Donnée</InputLabel>
+              <Controller
+                name="dataType"
+                control={control}
+                defaultValue={dataTypesFiltered?.[0]?.id}
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <Select
+                    labelId="dataType-select-label"
+                    id="dataType-select"
+                    label="dataType"
+                    ref={ref}
+                    value={value}
+                    onChange={(data) => onChange(data.target.value)}
+                    required
+                  >
+                    {dataTypesFiltered?.map((dataType) => (
+                      <MenuItem key={dataType.id} value={dataType.id}>
+                        {dataType.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <Box sx={{ m: 4 }} />
+
+            <TextField
+              label="value"
+              placeholder="0"
+              type="number"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {selectedUnit?.name}
+                  </InputAdornment>
+                ),
+              }}
+              {...register('value', {
+                required: true,
+              })}
             />
-          </FormControl>
 
-          <Box sx={{ m: 4 }} />
+            <Box sx={{ m: 4 }} />
 
-          <FormControl fullWidth>
-            <InputLabel id="dataType-select-label">Donnée</InputLabel>
-            <Controller
-              name="dataType"
-              control={control}
-              defaultValue={dataTypesFiltered?.[0]?.id}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <Select
-                  labelId="dataType-select-label"
-                  id="dataType-select"
-                  label="dataType"
-                  ref={ref}
-                  value={value}
-                  onChange={(data) => onChange(data.target.value)}
-                  required
-                >
-                  {dataTypesFiltered?.map((dataType) => (
-                    <MenuItem key={dataType.id} value={dataType.id}>
-                      {dataType.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+            <TextField
+              label="Date"
+              type="datetime-local"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              sx={{ width: '100%' }}
+              {...register('date', {
+                required: true,
+              })}
             />
-          </FormControl>
-
-          <Box sx={{ m: 4 }} />
-
-          <TextField
-            label="value"
-            placeholder="0"
-            type="number"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  {selectedUnit?.name}
-                </InputAdornment>
-              ),
-            }}
-            {...register('value', {
-              required: true,
-            })}
-          />
-
-          <Box sx={{ m: 4 }} />
-
-          <TextField
-            label="Date"
-            type="datetime-local"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{width: "100%"}}
-            {...register('date', {
-              required: true,
-            })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Annulé</Button>
-          <Button onClick={handleClose}>Ajouter</Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                reset();
+                handleClose();
+              }}
+            >
+              Annulé
+            </Button>
+            <LoadingButton type="submit" loading={isSubmitting}>
+              Ajouter
+            </LoadingButton>
+          </DialogActions>
+        </form>
       </Dialog>
-    </form>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Donnée ajouté avec success !
+        </Alert>
+      </Snackbar>
+    </>
   );
 };

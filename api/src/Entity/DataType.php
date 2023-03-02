@@ -41,13 +41,13 @@ class DataType
     #[ORM\OneToMany(mappedBy: 'data_type', targetEntity: Goal::class)]
     private Collection $goals;
 
-    #[ORM\OneToMany(mappedBy: 'data_type', targetEntity: Data::class)]
-    private Collection $data;
+    #[ORM\OneToMany(mappedBy: 'dataType', targetEntity: Data::class, orphanRemoval: true)]
+    private Collection $datas;
 
     public function __construct()
     {
         $this->goals = new ArrayCollection();
-        $this->data = new ArrayCollection();
+        $this->datas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,27 +124,27 @@ class DataType
     /**
      * @return Collection<int, Data>
      */
-    public function getData(): Collection
+    public function getDatas(): Collection
     {
-        return $this->data;
+        return $this->datas;
     }
 
-    public function addData(Data $data): self
+    public function addDatas(Data $datas): self
     {
-        if (!$this->data->contains($data)) {
-            $this->data->add($data);
-            $data->setDataType($this);
+        if (!$this->datas->contains($datas)) {
+            $this->datas->add($datas);
+            $datas->setDataType($this);
         }
 
         return $this;
     }
 
-    public function removeData(Data $data): self
+    public function removeDatas(Data $datas): self
     {
-        if ($this->data->removeElement($data)) {
+        if ($this->datas->removeElement($datas)) {
             // set the owning side to null (unless already changed)
-            if ($data->getDataType() === $this) {
-                $data->setDataType(null);
+            if ($datas->getDataType() === $this) {
+                $datas->setDataType(null);
             }
         }
 
