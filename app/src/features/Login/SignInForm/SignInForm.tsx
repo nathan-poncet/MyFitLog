@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 export const SignInForm: React.FC = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, setError, formState } = useForm<{
+  const { register, handleSubmit, setError, formState, watch } = useForm<{
     email: string;
     password: string;
+    confirmPassword: string;
   }>();
   const { isSubmitting, errors } = formState;
 
@@ -43,8 +44,8 @@ export const SignInForm: React.FC = () => {
               }
 
               localStorage.setItem('authToken', JSON.stringify(data.token));
-              navigate('/dashboard');
               resolve('auth success !');
+              navigate('/dashboard');
             })
             .catch((err) => {
               setError('root', { message: err.response.data.message });
@@ -52,10 +53,12 @@ export const SignInForm: React.FC = () => {
             });
         })
         .catch((err) => {
+          console.log(err);
+          
           setError('root', {
             message:
-              err.response.data.message ??
-              err.response.data['hydra:description'],
+              err?.response?.data?.message ??
+              err?.response?.data['hydra:description'],
           });
           resolve(err);
         });
@@ -68,18 +71,32 @@ export const SignInForm: React.FC = () => {
         <TextField
           label="Email"
           placeholder="email@gmail.mail"
-          {...register('email')}
+          {...register('email', {
+            required: true,
+          })}
         />
         <TextField
-          label="Password"
+          label="Mot de passe"
           placeholder="*********"
           type="password"
-          {...register('password')}
+          {...register('password', {
+            required: true,
+          })}
         />
         <TextField
-          label="Password comfirmation"
+          label="Confirmation de mot de passe"
           placeholder="*********"
           type="password"
+          {...register('confirmPassword', {
+            required: true,
+            validate: (val: string) => {
+              if (watch('password') != val) {
+                return 'Les mots de passes ne sont pas les mêmes';
+              }
+            },
+          })}
+          error={!!errors.confirmPassword?.message}
+          helperText={errors.confirmPassword?.message}
         />
         <LoadingButton
           loading={isSubmitting}

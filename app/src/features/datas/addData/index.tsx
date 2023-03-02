@@ -5,34 +5,33 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Dayjs } from 'dayjs';
 import axios from '@/libs/axios';
 import { Controller, useForm } from 'react-hook-form';
+import { Box } from '@mui/system';
 
 export const AddData = () => {
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const [categories, setCategories] = useState<{
-    '@context': string;
     '@id': String;
-    '@type': 'hydra:Collection';
     'hydra:member': {
       '@id': string;
       '@type': string;
-      category: String;
       id: number;
-      unit: String;
       name: String;
     }[];
-    'hydra:totalItems': number;
   }>();
   const [dataTypes, setDataTypes] = useState<{
-    '@context': string;
     '@id': String;
-    '@type': 'hydra:Collection';
     'hydra:member': {
       '@id': string;
       '@type': string;
@@ -41,25 +40,43 @@ export const AddData = () => {
       unit: String;
       name: String;
     }[];
-    'hydra:totalItems': number;
   }>();
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<Dayjs | null>(null);
-  const { control, handleSubmit } = useForm<{
+  const [units, setUnits] = useState<{
+    '@id': String;
+    'hydra:member': {
+      '@id': string;
+      '@type': string;
+      id: number;
+      name: string;
+      dataTypes: [string];
+      unit_type: string;
+      unitType: string;
+    }[];
+  }>();
+  const { control, handleSubmit, watch, setValue, register } = useForm<{
     category: number;
     date: string;
     value: number;
     dataType: number;
     user: number;
   }>();
+  const selectedCategory = categories?.['hydra:member'].find(
+    (item) => item.id === watch('category', categories?.['hydra:member'][0]?.id)
+  );
+  const dataTypesFiltered = dataTypes?.['hydra:member'].filter(
+    (item) => item.category === selectedCategory?.['@id']
+  );
+  const selectedDataTypes = dataTypes?.['hydra:member'].find(
+    (item) => item.id === watch('dataType')
+  );
+  const selectedUnit = units?.['hydra:member'].find(
+    (item) => item['@id'] === selectedDataTypes?.unit
+  );
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    if (dataTypesFiltered?.[0]?.id)
+      setValue('dataType', dataTypesFiltered[0].id);
+  }, [selectedCategory]);
 
   useEffect(() => {
     axios
@@ -71,9 +88,13 @@ export const AddData = () => {
     axios
       .get('/data_types')
       .then(({ data }) => {
-        console.log(data);
-        
         setDataTypes(data);
+      })
+      .catch((err) => handleClose());
+    axios
+      .get('/units')
+      .then(({ data }) => {
+        setUnits(data);
       })
       .catch((err) => handleClose());
   }, []);
@@ -84,9 +105,7 @@ export const AddData = () => {
     dataType: number;
     user: number;
   }) => {
-    return new Promise((resolve, reject) => {
-      console.log(value);
-    });
+    return new Promise((resolve, reject) => {});
   };
 
   return (
@@ -110,12 +129,11 @@ export const AddData = () => {
                   id="category-select"
                   label="Category"
                   ref={ref}
-                  value={
-                    categories?.['hydra:member'].find(
-                      (category) => category.id === value
-                    )?.id
-                  }
-                  onChange={(data) => onChange(data.target.value)}
+                  value={value}
+                  onChange={(data) => {
+                    onChange(data.target.value);
+                  }}
+                  required
                 >
                   {categories?.['hydra:member'].map((category) => (
                     <MenuItem key={category.id} value={category.id}>
@@ -126,35 +144,66 @@ export const AddData = () => {
               )}
             />
           </FormControl>
-          <br />
+
+          <Box sx={{ m: 4 }} />
+
           <FormControl fullWidth>
-            <InputLabel id="category-select-label">Category</InputLabel>
+            <InputLabel id="dataType-select-label">Donnée</InputLabel>
             <Controller
               name="dataType"
               control={control}
-              defaultValue={dataTypes?.['hydra:member'][0].id}
+              defaultValue={dataTypesFiltered?.[0]?.id}
               render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <Select
-                  labelId="category-select-label"
-                  id="category-select"
-                  label="Category"
+                  labelId="dataType-select-label"
+                  id="dataType-select"
+                  label="dataType"
                   ref={ref}
-                  value={
-                    categories?.['hydra:member'].find(
-                      (category) => category.id === value
-                    )?.id
-                  }
+                  value={value}
                   onChange={(data) => onChange(data.target.value)}
+                  required
                 >
-                  {categories?.['hydra:member'].map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
+                  {dataTypesFiltered?.map((dataType) => (
+                    <MenuItem key={dataType.id} value={dataType.id}>
+                      {dataType.name}
                     </MenuItem>
                   ))}
                 </Select>
               )}
             />
           </FormControl>
+
+          <Box sx={{ m: 4 }} />
+
+          <TextField
+            label="value"
+            placeholder="0"
+            type="number"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  {selectedUnit?.name}
+                </InputAdornment>
+              ),
+            }}
+            {...register('value', {
+              required: true,
+            })}
+          />
+
+          <Box sx={{ m: 4 }} />
+
+          <TextField
+            label="Date"
+            type="datetime-local"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            sx={{width: "100%"}}
+            {...register('date', {
+              required: true,
+            })}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Annulé</Button>

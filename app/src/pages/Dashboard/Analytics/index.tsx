@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Analytics() {
   return (
-    <Container>
+    <Container maxWidth="xl">
       <Box sx={{ m: 8 }} />
       <AddData />
       <Box sx={{ m: 8 }} />
