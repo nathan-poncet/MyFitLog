@@ -2,13 +2,27 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DataRepository;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
+#[ApiResource(
+    uriTemplate: '/users/{id}/data', 
+    uriVariables: [
+        'id' => new Link(
+            fromClass: User::class,
+            toProperty: '_user'
+        )
+    ], 
+    operations: [new GetCollection()],
+)]
+// #[ApiFilter(DateFilter::class, properties: ['_date'])]
 class Data
 {
     #[ORM\Id]
