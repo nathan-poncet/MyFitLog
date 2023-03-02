@@ -24,6 +24,12 @@ export const AddData = () => {
   const handleClose = () => setOpen(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const [me, setMe] = useState<{
+    '@id': string;
+    '@type': string;
+    id: number;
+    email: String;
+  }>();
   const [categories, setCategories] = useState<{
     '@id': String;
     'hydra:member': {
@@ -92,6 +98,12 @@ export const AddData = () => {
 
   useEffect(() => {
     axios
+      .get('/me')
+      .then(({ data }) => {
+        setMe(data);
+      })
+      .catch((err) => handleClose());
+    axios
       .get('/categories')
       .then(({ data }) => {
         setCategories(data);
@@ -115,20 +127,19 @@ export const AddData = () => {
     date,
     value,
     dataType,
-    user,
   }: {
     date: string;
     value: number;
     dataType: number;
-    user: number;
   }) => {
     return new Promise((resolve) => {
+      if (!me) return resolve('no user !');
       axios
         .post('/data', {
           date,
           value: Number(value),
           dataType: `/data_types/${dataType}`,
-          user: `/users/${35}`,
+          user: `/users/${me.id}`,
         })
         .then(({ data }) => {
           resolve('auth success !');
