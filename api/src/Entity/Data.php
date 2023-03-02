@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
-#[ApiResource]
+#[ApiResource(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
 class Data
 {
     #[ORM\Id]
@@ -26,7 +26,7 @@ class Data
     #[ORM\JoinColumn(nullable: false)]
     private ?DataType $data_type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'data')]
+    #[ORM\ManyToOne(inversedBy: 'datas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $_user = null;
 

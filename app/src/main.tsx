@@ -10,7 +10,7 @@ import Login from './pages/Root/Login';
 import Home from './pages/Root/Home';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Dashboard/Analytics';
-import { MyProfilePage } from "@/pages/MyProfilePage/MyProfilePage"
+import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile"
 
 const router = createBrowserRouter([
   {
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'my-profile',
-        element: <MyProfilePage />,
+        element: <MyProfile />,
       },
     ],
   },
