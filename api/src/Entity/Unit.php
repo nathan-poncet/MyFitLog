@@ -30,15 +30,15 @@ class Unit
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'units', targetEntity: UnitType::class)]
-    private Collection $unitType;
-
     #[ORM\OneToMany(mappedBy: 'unit', targetEntity: DataType::class)]
     private Collection $dataTypes;
 
+    #[ORM\ManyToOne(inversedBy: 'units')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UnitType $unit_type = null;
+
     public function __construct()
     {
-        $this->unitType = new ArrayCollection();
         $this->dataTypes = new ArrayCollection();
     }
 
@@ -55,36 +55,6 @@ class Unit
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, UnitType>
-     */
-    public function getUnitType(): Collection
-    {
-        return $this->unitType;
-    }
-
-    public function addUnitType(UnitType $unitType): self
-    {
-        if (!$this->unitType->contains($unitType)) {
-            $this->unitType->add($unitType);
-            $unitType->setUnits($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUnitType(UnitType $unitType): self
-    {
-        if ($this->unitType->removeElement($unitType)) {
-            // set the owning side to null (unless already changed)
-            if ($unitType->getUnits() === $this) {
-                $unitType->setUnits(null);
-            }
-        }
 
         return $this;
     }
@@ -115,6 +85,18 @@ class Unit
                 $dataType->setUnit(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUnitType(): ?UnitType
+    {
+        return $this->unit_type;
+    }
+
+    public function setUnitType(?UnitType $unit_type): self
+    {
+        $this->unit_type = $unit_type;
 
         return $this;
     }

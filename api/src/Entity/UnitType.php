@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\UnitTypeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UnitTypeRepository::class)]
@@ -28,8 +30,14 @@ class UnitType
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'unitType')]
-    private ?Unit $units = null;
+    #[ORM\OneToMany(mappedBy: 'unit_type', targetEntity: Unit::class)]
+    private Collection $units;
+
+    public function __construct()
+    {
+        $this->units = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -48,14 +56,32 @@ class UnitType
         return $this;
     }
 
-    public function getUnits(): ?Unit
+    /**
+     * @return Collection<int, Unit>
+     */
+    public function getUnits(): Collection
     {
         return $this->units;
     }
 
-    public function setUnits(?Unit $units): self
+    public function addUnit(Unit $unit): self
     {
-        $this->units = $units;
+        if (!$this->units->contains($unit)) {
+            $this->units->add($unit);
+            $unit->setUnitType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUnit(Unit $unit): self
+    {
+        if ($this->units->removeElement($unit)) {
+            // set the owning side to null (unless already changed)
+            if ($unit->getUnitType() === $this) {
+                $unit->setUnitType(null);
+            }
+        }
 
         return $this;
     }
