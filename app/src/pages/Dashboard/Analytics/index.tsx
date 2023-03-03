@@ -36,7 +36,7 @@ function Analytics() {
 
       <Box sx={{ m: 8 }} />
 
-      <ShowMetrics />
+      <ShowMetrics date_end={new Date()} date_start={new Date()}/>
 
       <Box sx={{ m: 8 }} />
     </Container>

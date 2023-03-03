@@ -1,5 +1,6 @@
 import React from 'react';
 import { LogoDashboard } from '@/components/data_display/logo/dashboard';
+import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import {
   LogoutOutlined,
   MonitorHeart,
@@ -59,6 +60,15 @@ export const Header: React.FC = () => {
                 color={
                   location.pathname === '/dashboard' ? 'primary' : 'inherit'
                 }
+              />
+            </ListItemIcon>
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
+          <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
+            <ListItemIcon sx={{ minWidth: 0 }}>
+              <ModeStandbyIcon
+                onClick={() => navigate("/dashboard/objectifs")}
               />
             </ListItemIcon>
           </ListItemButton>
