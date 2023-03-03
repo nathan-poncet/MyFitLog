@@ -8,7 +8,6 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  Menu,
   MenuItem,
   Select,
   Snackbar,
@@ -17,33 +16,16 @@ import {
 import { useEffect, useState } from 'react';
 import axios from '@/libs/axios';
 import { Controller, useForm } from 'react-hook-form';
-import * as Styles from './index.styles';
-import { SleepEvolutionChart } from '@/components/GraphCard/SleepEvolutionChartCard/SleepEvolutionChart';
-import { MetricsCard } from '@/components/MetricsCard/MetricsCard';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
-import { MyResponsiveBar } from '@/components/GraphCard/WeighEvolutionChartCard/WeightEvolutionChartCard';
 import { Box } from '@mui/system';
 import { LoadingButton } from '@mui/lab';
+import { useAuth } from '@/hooks/useAuth';
 
 export const AddData = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const [me, setMe] = useState<{
-    '@id': string;
-    '@type': string;
-    id: number;
-    email: String;
-  }>();
-  const [data, setData] = useState<{
-    '@id': string;
-    '@type': string;
-    dataType: string;
-    date: string;
-    value: number;
-    user: string;
-  }>();
   const [categories, setCategories] = useState<{
     '@id': String;
     'hydra:member': {
@@ -112,21 +94,6 @@ export const AddData = () => {
 
   useEffect(() => {
     axios
-      .get('/me')
-      .then(({ data }) => {
-        setMe(data);
-      })
-      .then(() => {
-        if (!me) return handleClose();
-        axios
-          .get(`/users/${me.id}/data`)
-          .then(({ data }) => {
-            setData(data);
-          })
-          .catch((err) => handleClose());
-      })
-      .catch((err) => handleClose());
-    axios
       .get('/categories')
       .then(({ data }) => {
         setCategories(data);
@@ -144,7 +111,7 @@ export const AddData = () => {
         setUnits(data);
       })
       .catch((err) => handleClose());
-  }, []);
+  }, [user]);
 
   const onSubmit = ({
     date,
@@ -156,13 +123,13 @@ export const AddData = () => {
     dataType: number;
   }) => {
     return new Promise((resolve) => {
-      if (!me) return resolve('no user !');
+      if (!user) return resolve('no user !');
       axios
         .post('/data', {
           date,
           value: Number(value),
           dataType: `/data_types/${dataType}`,
-          user: `/users/${me.id}`,
+          user: `/users/${user.id}`,
         })
         .then(({ data }) => {
           resolve('auth success !');
@@ -175,71 +142,11 @@ export const AddData = () => {
     });
   };
 
-  const MetricsValue = [
-    {
-      title: 'temps de sommeil',
-      value: 7.5,
-      unit: 'h',
-    },
-    {
-      title: 'Qualité du sommeil',
-      value: 95,
-      unit: '%',
-    },
-    {
-      title: 'Masse corporelle',
-      value: 80,
-      unit: 'kg',
-    },
-    {
-      title: 'Tour de taille',
-      value: 75,
-      unit: 'cm',
-    },
-  ];
-
   return (
-    <Styles.FormContainer onSubmit={handleSubmit(onSubmit)}>
-      <Styles.HeaderContainer>
-        <Button variant="outlined" onClick={() => setOpen(true)}>
-          Ajouter une donnée
-        </Button>
-
-        <PopupState
-          variant="popover"
-          popupId="demo-popup-menu"
-          disableAutoFocus
-        >
-          {(popupState) => (
-            <>
-              <Button variant="contained" {...bindTrigger(popupState)}>
-                Dashboard
-              </Button>
-              <Menu {...bindMenu(popupState)}>
-                <MenuItem onClick={popupState.close}>Profile</MenuItem>
-                <MenuItem onClick={popupState.close}>My account</MenuItem>
-                <MenuItem onClick={popupState.close}>Logout</MenuItem>
-              </Menu>
-            </>
-          )}
-        </PopupState>
-      </Styles.HeaderContainer>
-
-      <Styles.MetricsCard>
-        {MetricsValue.map((value) => (
-          <MetricsCard
-            key={value.title}
-            title={value.title}
-            value={value.value}
-            unit={value.unit}
-          />
-        ))}
-      </Styles.MetricsCard>
-
-      <Styles.GraphCard>
-        <SleepEvolutionChart />
-        <MyResponsiveBar />
-      </Styles.GraphCard>
+    <>
+      <Button variant="outlined" onClick={() => setOpen(true)}>
+        Ajouter une donnée
+      </Button>
 
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -362,6 +269,6 @@ export const AddData = () => {
           Donnée ajouté avec success !
         </Alert>
       </Snackbar>
-    </Styles.FormContainer>
+    </>
   );
 };

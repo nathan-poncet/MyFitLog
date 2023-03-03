@@ -10,7 +10,7 @@ export const Container = styled(Card)`
   display: grid;
   text-align: center;
   vertical-align: center;
-  border-radius: .8rem;
+  border-radius: .8rem !important;
 `
 
 export const NumberToDisplay = styled(Typography)`

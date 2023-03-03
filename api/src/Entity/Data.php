@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
 #[ApiResource()]
@@ -22,18 +23,22 @@ use ApiPlatform\Metadata\GetCollection;
     operations: [
         new GetCollection(),
     ],
+    normalizationContext: ['groups' => ['data:read']],
 )]
 // #[ApiFilter(DateFilter::class, properties: ['date'])]
 class Data
 {
+    #[Groups(['data:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['data:read'])]
     #[ORM\Column]
     private ?float $_value = null;
     
+    #[Groups(['data:read'])]
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
@@ -41,6 +46,7 @@ class Data
     #[ORM\JoinColumn(nullable: false)]
     private ?User $_user = null;
 
+    #[Groups(['data:read'])]
     #[ORM\ManyToOne(inversedBy: 'datas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?DataType $dataType = null;

@@ -12,9 +12,13 @@ use App\Repository\DataTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DataTypeRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_USER')")]
+#[ApiResource(
+    security: "is_granted('ROLE_USER')",
+    normalizationContext: ['groups' => ['data:read']],
+)]
 #[Get]
 #[Put(security: "is_granted('ROLE_ADMIN')")]
 #[GetCollection]
@@ -22,11 +26,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 class DataType
 {
+    #[Groups(['data:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['data:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -34,6 +40,7 @@ class DataType
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
+    #[Groups(['data:read'])]
     #[ORM\ManyToOne(inversedBy: 'dataTypes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Unit $unit = null;

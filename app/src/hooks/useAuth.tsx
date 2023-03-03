@@ -1,5 +1,5 @@
 import axios from '@/libs/axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useAuth = () => {
   const [user, setUser] = useState<{
@@ -61,6 +61,10 @@ export const useAuth = () => {
     localStorage.removeItem('authToken');
     fetchUser();
   };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return { user, login, register, logout };
 };

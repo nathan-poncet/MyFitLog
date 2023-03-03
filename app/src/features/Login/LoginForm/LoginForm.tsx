@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { login } = useAuth();
   const { register, handleSubmit, setError, formState } = useForm<{
     email: string;
     password: string;
@@ -30,7 +30,7 @@ export const LoginForm: React.FC = () => {
           resolve(res);
         })
         .catch((err) => {
-          setError('root', { message: err.response.data.message });
+          setError('root', { message: err.response?.data?.message });
           resolve(err);
         });
     });
