@@ -42,7 +42,10 @@ export const AddData = () => {
       '@type': string;
       category: String;
       id: number;
-      unit: String;
+      unit: {
+        id: string;
+        name: string;
+      };
       name: String;
     }[];
   }>();
@@ -83,10 +86,7 @@ export const AddData = () => {
   const selectedDataTypes = dataTypes?.['hydra:member'].find(
     (item) => item.id === watch('dataType')
   );
-  const selectedUnit = units?.['hydra:member'].find(
-    (item) => item['@id'] === selectedDataTypes?.unit
-  );
-
+  
   useEffect(() => {
     if (dataTypesFiltered?.[0]?.id)
       setValue('dataType', dataTypesFiltered[0].id);
@@ -218,7 +218,7 @@ export const AddData = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
-                    {selectedUnit?.name}
+                    {selectedDataTypes?.unit?.name}
                   </InputAdornment>
                 ),
               }}

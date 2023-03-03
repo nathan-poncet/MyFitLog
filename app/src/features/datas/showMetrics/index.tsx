@@ -44,8 +44,6 @@ export const ShowMetrics = ({ date_start, date_end }: Props) => {
     (data) => data.dataType.id
   );
 
-  // console.log(filteredData);
-
   useEffect(() => {
     if (!user) return;
     axios.get(`/users/${user.id}/data`).then(({ data }) => {

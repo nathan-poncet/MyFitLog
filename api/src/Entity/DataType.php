@@ -36,6 +36,7 @@ class DataType
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['data:read'])]
     #[ORM\ManyToOne(inversedBy: 'dataTypes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
