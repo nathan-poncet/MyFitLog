@@ -4,8 +4,10 @@ import { Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import NotesIcon from '@mui/icons-material/Notes';
+import { useAuth } from '@/hooks/useAuth';
 
 const MyProfile: React.FC = () => {
+  const { user } = useAuth();
   return (
     <Styles.Container>
       <Styles.LeftContainer>
@@ -35,7 +37,7 @@ const MyProfile: React.FC = () => {
             fontWeight="300"
             sx={{ display: 'flex', gap: 2 }}
           >
-            emmanuellattier2019@gmail.com <EditIcon />
+            {user?.email} 
           </Typography>
         </Styles.InformationCard>
 
@@ -61,7 +63,7 @@ const MyProfile: React.FC = () => {
             sx={{ display: 'flex', gap: 2 }}
           >
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-            vehicula. {<EditIcon />}
+            vehicula. 
           </Typography>
         </Styles.InformationCard>
       </Styles.LeftContainer>

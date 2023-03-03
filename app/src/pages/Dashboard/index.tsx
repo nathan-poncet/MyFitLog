@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 import { Box, Stack } from '@mui/material';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
