@@ -68,7 +68,10 @@ export const Header: React.FC = () => {
           <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
             <ListItemIcon sx={{ minWidth: 0 }}>
               <ModeStandbyIcon
-                onClick={() => navigate("/dashboard/objectifs")}
+                onClick={() => navigate("objectifs")}
+                color={
+                  location.pathname === '/dashboard/objectifs' ? 'primary' : 'inherit'
+                }
               />
             </ListItemIcon>
           </ListItemButton>
