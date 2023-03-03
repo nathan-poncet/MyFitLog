@@ -86,7 +86,7 @@ export const AddData = () => {
   const selectedDataTypes = dataTypes?.['hydra:member'].find(
     (item) => item.id === watch('dataType')
   );
-  
+
   useEffect(() => {
     if (dataTypesFiltered?.[0]?.id)
       setValue('dataType', dataTypesFiltered[0].id);
@@ -248,7 +248,7 @@ export const AddData = () => {
                 handleClose();
               }}
             >
-              Annulé
+              Annuler
             </Button>
             <LoadingButton type="submit" loading={isSubmitting}>
               Ajouter

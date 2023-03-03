@@ -11,6 +11,7 @@ import Home from './pages/Root/Home';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Dashboard/Analytics';
 import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile"
+import { Goals } from "@/pages/Dashboard/Goals/Goals"
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
         path: 'my-profile',
         element: <MyProfile />,
       },
+      {
+        path: "objectifs",
+        element: <Goals />
+      }
     ],
   },
 ]);
