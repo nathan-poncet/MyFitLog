@@ -54,15 +54,15 @@ function Analytics() {
 
       <Box sx={{ m: 8 }} />
 
-      <Typography variant='h5'>Objectifs</Typography>
-      <Box sx={{ m: 2 }} />
-      <ShowGoals />
-
-      <Box sx={{ m: 8 }} />
-
-      <Typography variant='h5'>Données</Typography>
+      <Typography variant="h5">Données</Typography>
       <Box sx={{ m: 2 }} />
       <ShowMetrics date_start={new Date()} date_end={new Date()} />
+      
+      <Box sx={{ m: 8 }} />
+
+      <Typography variant="h5">Objectifs</Typography>
+      <Box sx={{ m: 2 }} />
+      <ShowGoals />
 
       <Box sx={{ m: 8 }} />
     </Container>

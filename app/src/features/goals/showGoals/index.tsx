@@ -29,8 +29,8 @@ export const ShowGoals = () => {
       _value: number;
       name: string;
       description: string;
-      startDate: string;
-      endDate: string;
+      start_date: string;
+      end_date: string;
     }[];
     'hydra:totalItems': number;
   }>();
@@ -60,6 +60,7 @@ export const ShowGoals = () => {
           </Typography>
           <Typography variant="h6">{goal.name}</Typography>
           <Typography variant="body2">{goal.description}</Typography>
+          <Typography variant="body2" fontWeight={700}>{new Date(goal.start_date).toDateString()} - {new Date(goal.end_date).toDateString()}</Typography>
         </Card>
       ))}
     </Box>
