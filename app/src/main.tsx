@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Dashboard/Analytics';
 import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile"
 import { Goals } from "@/pages/Dashboard/Goals/Goals"
+import RGPD from './pages/Root/RGPD';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: 'about',
         element: <About />,
+      },
+      {
+        path: 'rgpd',
+        element: <RGPD />,
       },
     ],
   },
