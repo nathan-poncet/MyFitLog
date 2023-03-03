@@ -31,7 +31,7 @@ export const Header: React.FC = () => {
       bgcolor="#FFFFFF"
       width={{ xs: '100vw', sm: 'unset' }}
       height={{ xs: 'unset', sm: '100vh' }}
-      display="inline-flex"
+      display={{ xs: 'none', sm: 'inline-flex' }}
       flexDirection="column"
     >
       <>
@@ -60,13 +60,6 @@ export const Header: React.FC = () => {
                   location.pathname === '/dashboard' ? 'primary' : 'inherit'
                 }
               />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton sx={{ borderRadius: 2, justifyContent: 'center' }}>
-            <ListItemIcon sx={{ minWidth: 0 }}>
-              <Settings />
             </ListItemIcon>
           </ListItemButton>
         </ListItem>

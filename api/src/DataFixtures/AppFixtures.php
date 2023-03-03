@@ -210,12 +210,12 @@ class AppFixtures extends Fixture
 
 
         $unit = new Unit();
-        $unit->setName("kg");
+        $unit->setName("lb");
         $unit->setUnitType($unitType);
         $manager->persist($unit);
 
         $unit = new Unit();
-        $unit->setName("lb");
+        $unit->setName("kg");
         $unit->setUnitType($unitType);
         $manager->persist($unit);
 

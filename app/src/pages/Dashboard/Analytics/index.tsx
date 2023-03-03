@@ -5,7 +5,7 @@ import { Box, Button, Menu, MenuItem, Stack } from '@mui/material';
 import { Container } from '@mui/system';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Analytics() {
   return (
@@ -25,9 +25,9 @@ function Analytics() {
                 Dashboard
               </Button>
               <Menu {...bindMenu(popupState)}>
-                <MenuItem onClick={popupState.close}>Profile</MenuItem>
-                <MenuItem onClick={popupState.close}>My account</MenuItem>
-                <MenuItem onClick={popupState.close}>Logout</MenuItem>
+                <MenuItem onClick={popupState.close} component={Link} to="/dashboard">Dashboard</MenuItem>
+                <MenuItem onClick={popupState.close} component={Link} to="/dashboard/my-profile">My account</MenuItem>
+                <MenuItem onClick={popupState.close} component={Link} to="">Logout</MenuItem>
               </Menu>
             </>
           )}
