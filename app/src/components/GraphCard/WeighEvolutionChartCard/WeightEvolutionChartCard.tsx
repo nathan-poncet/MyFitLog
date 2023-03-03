@@ -1,7 +1,13 @@
 import { ResponsiveBar } from '@nivo/bar'
 import * as Styles from "@/components/GraphCard/SleepEvolutionChartCard/SleepEvolutionChart.styles"
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import React from "react"
+import { Button } from "@mui/material"
+import LineAxisIcon from '@mui/icons-material/LineAxis';
 
 export const MyResponsiveBar = () => {
+  const [ isGroup, setIsGroup ] = React.useState<"grouped" | "stacked" | undefined>()
+  const [ isHorizont, setIsHorizont ] = React.useState<"horizontal" | "vertical" | undefined>()
   const data = [
     {
       "country": "AD",
@@ -113,6 +119,7 @@ export const MyResponsiveBar = () => {
   return (
     <Styles.CardContainer>
       <ResponsiveBar
+        layout={isHorizont}
         data={data}
         keys={[
           'hot dog',
@@ -200,6 +207,7 @@ export const MyResponsiveBar = () => {
             ]
           ]
         }}
+        groupMode={isGroup}
         legends={[
           {
             dataFrom: 'keys',
@@ -230,6 +238,23 @@ export const MyResponsiveBar = () => {
           return e.id + ": " + e.formattedValue + " in country: " + e.indexValue
         }}
       />
+      <div>
+        {
+          isGroup === "stacked" ? <Button variant={"outlined"} onClick={() => setIsGroup("grouped")}>
+            <AutoFixHighIcon />
+          </Button> : <Button variant={"outlined"} onClick={() => setIsGroup("stacked")}>
+            <AutoFixHighIcon />
+          </Button>
+        }
+        {
+          isHorizont === "horizontal" ? <Button variant={"outlined"} onClick={() => setIsHorizont("vertical")}>
+            <LineAxisIcon />
+          </Button> : <Button variant={"outlined"} onClick={() => setIsHorizont("horizontal")}>
+            <LineAxisIcon />
+          </Button>
+        }
+      </div>
+
     </Styles.CardContainer>
   )
 }
