@@ -9,41 +9,50 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GoalRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
+#[ApiResource()]
 #[ApiResource(
-    uriTemplate: '/users/{id}/goals', 
+    uriTemplate: '/users/{id}/goals',
     uriVariables: [
         'id' => new Link(
             fromClass: User::class,
             toProperty: '_user'
         )
-    ], 
+    ],
     operations: [new GetCollection()],
+    normalizationContext: ['groups' => ['goals:read']],
 )]
 class Goal
 {
+    #[Groups(['goals:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\Column]
     private ?float $_value = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $start_date = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $end_date = null;
 
+    #[Groups(['goals:read'])]
     #[ORM\ManyToOne(inversedBy: 'goals')]
     #[ORM\JoinColumn(nullable: false)]
     private ?DataType $data_type = null;

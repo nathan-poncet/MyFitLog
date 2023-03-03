@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UnitRepository::class)]
 #[ApiResource(
     security: "is_granted('ROLE_USER')",
-    normalizationContext: ['groups' => ['data:read']],
+    normalizationContext: ['groups' => ['data:read', 'goals:read']],
 )]
 #[Get]
 #[Put(security: "is_granted('ROLE_ADMIN')")]
@@ -26,13 +26,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 class Unit
 {
-    #[Groups(['data:read'])]
+    #[Groups(['data:read', 'goals:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['data:read'])]
+    #[Groups(['data:read', 'goals:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 

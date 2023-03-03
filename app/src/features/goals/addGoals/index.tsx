@@ -71,9 +71,12 @@ export const AddGoals = () => {
     formState: { isSubmitting },
   } = useForm<{
     category: number;
-    date: string;
-    value: number;
     dataType: number;
+    value: number;
+    startDate: string;
+    endDate: string;
+    name: string;
+    description: string;
     user: number;
   }>();
 
@@ -86,7 +89,7 @@ export const AddGoals = () => {
   const selectedDataTypes = dataTypes?.['hydra:member'].find(
     (item) => item.id === watch('dataType')
   );
-  
+
   useEffect(() => {
     if (dataTypesFiltered?.[0]?.id)
       setValue('dataType', dataTypesFiltered[0].id);
@@ -114,22 +117,32 @@ export const AddGoals = () => {
   }, [user]);
 
   const onSubmit = ({
-    date,
-    value,
     dataType,
+    value,
+    startDate,
+    endDate,
+    name,
+    description,
   }: {
-    date: string;
-    value: number;
+    category: number;
     dataType: number;
+    value: number;
+    startDate: string;
+    endDate: string;
+    name: string;
+    description: string;
   }) => {
     return new Promise((resolve) => {
       if (!user) return resolve('no user !');
       axios
-        .post('/data', {
-          date,
-          value: Number(value),
+        .post('/goals', {
           dataType: `/data_types/${dataType}`,
+          value: Number(value),
           user: `/users/${user.id}`,
+          name,
+          description,
+          startDate,
+          endDate,
         })
         .then(({ data }) => {
           resolve('auth success !');
@@ -145,12 +158,12 @@ export const AddGoals = () => {
   return (
     <>
       <Button variant="outlined" onClick={() => setOpen(true)}>
-        Ajouter une donnée
+        Ajouter un Objectif
       </Button>
 
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogTitle>Ajouter une donnée</DialogTitle>
+          <DialogTitle>Ajouter un Objectif</DialogTitle>
           <DialogContent>
             <br />
             <FormControl fullWidth>
@@ -230,16 +243,58 @@ export const AddGoals = () => {
             <Box sx={{ m: 4 }} />
 
             <TextField
-              label="Date"
-              type="datetime-local"
+              label="Nom"
+              type="text"
               InputLabelProps={{
                 shrink: true,
               }}
               sx={{ width: '100%' }}
-              {...register('date', {
+              {...register('name', {
                 required: true,
               })}
             />
+
+            <Box sx={{ m: 4 }} />
+
+            <TextField
+              label="Description"
+              type="text"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              sx={{ width: '100%' }}
+              {...register('description', {
+                required: true,
+              })}
+            />
+
+            <Box sx={{ m: 4 }} />
+
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Date de début"
+                type="datetime-local"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ width: '100%' }}
+                {...register('startDate', {
+                  required: true,
+                })}
+              />
+
+              <TextField
+                label="Date de fin"
+                type="datetime-local"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ width: '100%' }}
+                {...register('endDate', {
+                  required: true,
+                })}
+              />
+            </Box>
           </DialogContent>
           <DialogActions>
             <Button

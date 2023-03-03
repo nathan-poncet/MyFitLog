@@ -58,7 +58,6 @@ export const ShowMetrics = ({ date_start, date_end }: Props) => {
       <Box
         display="flex"
         flexDirection="row"
-        justifyContent="space-between"
         flexWrap="wrap"
         gap={4}
       >
@@ -88,7 +87,7 @@ export const ShowMetrics = ({ date_start, date_end }: Props) => {
         gap={4}
       >
         {Object.values(filteredData)?.map((items) => (
-          <Card sx={{ height: '400px', width: '100%', display: 'flex' }}>
+          <Card key={items[0].id} sx={{ height: '400px', width: '100%', display: 'flex' }}>
             <ResponsiveLine
               data={[
                 {
