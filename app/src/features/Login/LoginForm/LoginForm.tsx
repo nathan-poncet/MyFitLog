@@ -30,7 +30,11 @@ export const LoginForm: React.FC = () => {
           resolve(res);
         })
         .catch((err) => {
-          setError('root', { message: err.response?.data?.message });
+          if (err.response?.data?.['hydra:description'])
+            setError('root', {
+              message: err.response?.data?.['hydra:description'],
+            });
+          else setError('root', { message: err.response?.data?.message });
           resolve(err);
         });
     });
@@ -62,7 +66,6 @@ export const LoginForm: React.FC = () => {
         >
           login
         </LoadingButton>
-        <br />
         <Typography color="error.main">{errors.root?.message}</Typography>
       </Box>
     </form>

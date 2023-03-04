@@ -4,9 +4,8 @@ import { Card, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 
-export const ShowGoals = () => {
-  const { user } = useAuth();
-  const [goals, setGoals] = useState<{
+type Props = {
+  goals: {
     '@context': string;
     '@id': string;
     '@type': string;
@@ -33,35 +32,35 @@ export const ShowGoals = () => {
       end_date: string;
     }[];
     'hydra:totalItems': number;
-  }>();
-
-  useEffect(() => {
-    if (!user) return;
-    axios.get(`/users/${user.id}/goals`).then(({ data }) => {
-      setGoals(data);
-      console.log(data);
-    });
-  }, [user]);
-
+  };
+};
+export const ShowGoals = ({ goals }: Props) => {
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      flexWrap="wrap"
-      gap={4}
-    >
+    <Box display="flex" flexDirection="row" flexWrap="wrap" gap={4}>
       {goals?.['hydra:member'].map((goal) => (
-        <Card key={goal.id} sx={{ borderRadius: 10, padding: 2 }}>
+        <Box
+          key={goal.id}
+          sx={{ borderRadius: 2, paddingX: 4, paddingY: 3, background: '#FFF' }}
+        >
           <Typography variant="body2" fontWeight={600}>
             {goal.data_type.name}
           </Typography>
-          <Typography variant="body2" fontWeight={600}>
-            {goal._value} {goal.data_type.unit.name}
-          </Typography>
           <Typography variant="h6">{goal.name}</Typography>
-          <Typography variant="body2">{goal.description}</Typography>
-          <Typography variant="body2" fontWeight={700}>{new Date(goal.start_date).toDateString()} - {new Date(goal.end_date).toDateString()}</Typography>
-        </Card>
+          <Typography variant="body1">{goal.description}</Typography>
+          <Box sx={{ m: 2 }} />
+          <Typography variant="body2" fontWeight={700}>
+            Objectif: {goal._value} {goal.data_type.unit.name}
+          </Typography>
+          <Box sx={{ m: 2 }} />
+          <Typography variant="body2">
+            Début: {new Date(goal.start_date).toDateString()}
+          </Typography>
+          {goal.end_date && (
+            <Typography variant="body2">
+              Fin: {new Date(goal.end_date).toDateString()}
+            </Typography>
+          )}
+        </Box>
       ))}
     </Box>
   );

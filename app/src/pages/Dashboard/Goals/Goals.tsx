@@ -1,39 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Styles from './Goals.styles';
 import { Button, Typography } from '@mui/material';
 import { DataTable } from '@/features/DataGrid/DataGrid';
 import { AddGoals } from '@/features/goals/addGoals';
+import axios from '@/libs/axios';
+import { useAuth } from '@/hooks/useAuth';
 
-export const Goals: React.FC = () => {
-  const [open, setOpen] = useState(false);
-  function createData(
-    name: string,
-    value: number,
-    unit: string,
-    begin_at: string,
-    end_at: string
-  ) {
-    return { name, value, unit, begin_at, end_at };
-  }
+export const Goals = () => {
+  const { user } = useAuth();
+  const [goals, setGoals] = useState<{
+    '@context': string;
+    '@id': string;
+    '@type': string;
+    'hydra:member': {
+      '@id': string;
+      '@type': string;
+      id: number;
+      data_type: {
+        '@id': string;
+        '@type': string;
+        id: number;
+        name: string;
+        unit: {
+          '@id': string;
+          '@type': string;
+          id: number;
+          name: string;
+        };
+      };
+      _value: number;
+      name: string;
+      description: string;
+      start_date: string;
+      end_date: string;
+    }[];
+    'hydra:totalItems': number;
+  }>();
 
-  const rows = [
-    createData('Perte de poids', 85, 'Kg', '3 Mars 2023', '3 Juin 2023'),
-    createData(
-      'Amélioration de la qualité du sommeil',
-      90,
-      '%',
-      '3 Mars 2023',
-      '3 Mai 2023'
-    ),
-    createData(
-      'Amélioration de la durée du sommeil',
-      7,
-      'H',
-      '3 Mars 2023',
-      '3 Juin 2023'
-    ),
-    createData('Régulation de mon IMC', 23, 'IMC', '3 Mars 2023', '3 Mai 2023'),
-  ];
+  const fetchGoals = () => {
+    if (!user) return;
+    axios.get(`/users/${user.id}/goals`).then(({ data }) => {
+      setGoals(data);
+    });
+  };
+
+  useEffect(() => {
+    fetchGoals();
+  }, [user]);
 
   return (
     <Styles.Container>
@@ -43,11 +56,11 @@ export const Goals: React.FC = () => {
         <Typography variant="h3" variantMapping={{ h4: 'h1' }} fontWeight="500">
           Goals
         </Typography>
-        <AddGoals />
+        <AddGoals onAddGoal={fetchGoals}/>
       </Styles.Header>
       <br />
       <br />
-      <DataTable />
+      {goals && <DataTable goals={goals} />}
     </Styles.Container>
   );
 };

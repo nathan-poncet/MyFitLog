@@ -10,12 +10,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@mui/material';
 
 type Props = {
-  date_start: Date;
-  date_end: Date;
-};
-export const ShowMetrics = ({ date_start, date_end }: Props) => {
-  const { user } = useAuth();
-  const [data, setData] = useState<{
+  data: {
     '@context': string;
     '@id': string;
     '@type': string;
@@ -39,28 +34,19 @@ export const ShowMetrics = ({ date_start, date_end }: Props) => {
       _value: number;
     }[];
     'hydra:totalItems': number;
-  }>();
-
+  };
+  date_start: Date;
+  date_end: Date;
+};
+export const ShowMetrics = ({data, date_start, date_end }: Props) => {
   const filteredData = _.groupBy(
     data?.['hydra:member'],
     (data) => data.dataType.id
   );
 
-  useEffect(() => {
-    if (!user) return;
-    axios.get(`/users/${user.id}/data`).then(({ data }) => {
-      setData(data);
-    });
-  }, [user]);
-
   return (
     <>
-      <Box
-        display="flex"
-        flexDirection="row"
-        flexWrap="wrap"
-        gap={4}
-      >
+      <Box display="flex" flexDirection="row" flexWrap="wrap" gap={4}>
         {Object.values(filteredData).map((value) => {
           return (
             <MetricsCard
@@ -87,7 +73,10 @@ export const ShowMetrics = ({ date_start, date_end }: Props) => {
         gap={4}
       >
         {Object.values(filteredData)?.map((items) => (
-          <Card key={items[0].id} sx={{ height: '400px', width: '100%', display: 'flex' }}>
+          <Card
+            key={items[0].id}
+            sx={{ height: '400px', width: '100%', display: 'flex' }}
+          >
             <ResponsiveLine
               data={[
                 {

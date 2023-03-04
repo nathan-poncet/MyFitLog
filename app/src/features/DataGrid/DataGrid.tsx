@@ -1,8 +1,5 @@
-import * as React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Card } from '@mui/material';
-import axios from '@/libs/axios';
-import { useAuth } from '@/hooks/useAuth';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -14,21 +11,8 @@ const columns: GridColDef[] = [
   { field: 'end_date', headerName: 'Date de fin', width: 130 },
 ];
 
-const rows = [
-  { id: 1, name: 'Perte de poids', value: 85, unit: 'Kg' },
-  {
-    id: 2,
-    name: 'Amélioration de la qualité du sommeil',
-    value: 90,
-    unit: '%',
-  },
-  { id: 3, name: 'Amélioration de la durée du sommeil', value: 7, unit: 'H' },
-  { id: 4, name: 'Régulation de mon IMC', value: 23, unit: 'IMC' },
-];
-
-export const DataTable = () => {
-  const { user } = useAuth();
-  const [goals, setGoals] = React.useState<{
+type Props = {
+  goals: {
     '@context': string;
     '@id': string;
     '@type': string;
@@ -55,28 +39,23 @@ export const DataTable = () => {
       end_date: string;
     }[];
     'hydra:totalItems': number;
-  }>();
-
-  React.useEffect(() => {
-    if (!user) return;
-    axios.get(`/users/${user.id}/goals`).then(({ data }) => {
-      setGoals(data);
-      console.log(data);
-    });
-  }, [user]);
-
+  };
+};
+export const DataTable = ({ goals }: Props) => {
   return (
     <Card style={{ height: 400, width: '100%' }}>
       <DataGrid
-        rows={goals?.['hydra:member'].map((goal) => ({
-          id: goal.id,
-          name: goal.name,
-          description: goal.description,
-          value: goal._value,
-          unit: goal.data_type.unit.name,
-          start_date: goal.start_date,
-          end_date: goal.end_date,
-        })) ?? []}
+        rows={
+          goals?.['hydra:member'].map((goal) => ({
+            id: goal.id,
+            name: goal.name,
+            description: goal.description,
+            value: goal._value,
+            unit: goal.data_type.unit.name,
+            start_date: goal.start_date,
+            end_date: goal.end_date,
+          })) ?? []
+        }
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}

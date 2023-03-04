@@ -20,7 +20,10 @@ import { Box } from '@mui/system';
 import { LoadingButton } from '@mui/lab';
 import { useAuth } from '@/hooks/useAuth';
 
-export const AddData = () => {
+type Props = {
+  onAddData: () => void;
+};
+export const AddData = ({ onAddData }: Props) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
@@ -135,6 +138,7 @@ export const AddData = () => {
           resolve('auth success !');
           handleClose();
           setOpenSnackbar(true);
+          onAddData();
         })
         .catch((err) => {
           resolve(err);

@@ -30,7 +30,7 @@ export const SignInForm: React.FC = () => {
           resolve(res);
         })
         .catch((err) => {
-          setError('root', { message: err.response.data['hydra:description'] });
+          setError('root', { message: err.response?.data?.['hydra:description'] });
           resolve(err);
         });
     });
@@ -77,7 +77,6 @@ export const SignInForm: React.FC = () => {
         >
           Sign in
         </LoadingButton>
-        <br />
         <Typography color="error.main">{errors.root?.message}</Typography>
       </Box>
     </form>
