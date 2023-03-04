@@ -240,4 +240,4 @@ function RGPD() {
   );
 }
 
-export default About;
+export default RGPD;
