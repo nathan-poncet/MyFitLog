@@ -20,7 +20,7 @@ function Dashboard() {
     >
       <Header />
       <Box maxHeight="100vh" sx={{ overflowY: 'auto' }}>
-        <Outlet />
+        {isLoggin && <Outlet />}
       </Box>
     </Stack>
   ) : (
